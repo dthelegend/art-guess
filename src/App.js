@@ -1,23 +1,35 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import QuestionPanel from './components/QuestionPanel';
 
-function App() {
+// https://metmuseum.github.io/
+
+function App({department}) {
+  let [objectIds, setObjectIds] = useState()
+
+  useEffect(() => {
+      (async () => {
+          let response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects?departmentIds=${department}`);
+          
+          if(!response.ok) {
+              setObjectIds(null);
+              console.error(response);
+              return;
+          }
+
+          let resJson = await response.json()
+
+          console.log(resJson);
+
+          setObjectIds(resJson.objectIDs);
+      })();
+  }, [department]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <QuestionPanel
+        objectIds={objectIds}
+      />
     </div>
   );
 }
